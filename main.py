@@ -9,17 +9,29 @@ df = pd.read_csv('dataset.csv')
 
 # Function to enclose each value in double quotes
 IOS_df = df
-
+# Make all columns between quotations
 quote_text = lambda x: f'"{x}"'
+
+# Make all of the raw column lowercase
+IOS_df["raw"] = IOS_df["English"].str.lower()
+
+# Remove whitespaces from left and right
+IOS_df["raw"] = IOS_df["raw"].str.strip()
+
+# Replace spaces with  `_` in raw col
+IOS_df["raw"] = IOS_df["raw"].apply(lambda x: x.replace(' ', '_'))
+
+# Apply double <quote_text> to all cols
 IOS_df = df.applymap(quote_text)
-android_df = df
 
 for col in df.columns:
-        IOS_df[col] = IOS_df["English"] + " = " + IOS_df[col] + ";"
+        IOS_df[col] = IOS_df["raw"] + " = " + IOS_df[col] + ";"
 
 print(IOS_df.head(1))
 
+# Extract
 for col in df.columns:
+    if col != "raw":
         with open(f'{col}.strings', 'w') as f:
             for text in IOS_df[col].tolist():
                 f.write(text + '\n')
